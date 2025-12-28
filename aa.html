@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question for You ❤️</title>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* เพิ่ม position relative เพื่อให้หัวใจลอยเทียบกับ body */
+    position: relative;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* เปลี่ยนฟอนต์ให้ดูนุ่มขึ้นนิดหน่อย */
+    text-align: center;
+    background: #ffe4ec;
+    box-sizing: border-box;
+  }
+  .frame {
+    display: inline-block;
+    border: 5px solid #ff69b4;
+    border-radius: 20px; /* เพิ่มความโค้งมน */
+    padding: 30px; /* เพิ่มพื้นที่ด้านใน */
+    background: white;
+    box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3); /* เพิ่มเงาให้ดูกล่องลอยเด่นขึ้น */
+    position: relative;
+    z-index: 10; /* ให้กล่องข้อความอยู่เหนือหัวใจที่ลอย */
+  }
+  /* CSS สำหรับรูปหลักในกรอบ */
+  #mainFrame img {
+    max-width: 300px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    transition: all 0.3s ease;
+    border-radius: 10px; /* เพิ่มมุมมนให้รูป */
+  }
+  h1 {
+    color: #d63384; /* เปลี่ยนสีหัวข้อให้เข้มขึ้นนิดนึง */
+  }
+  .btn {
+    font-size: 18px;
+    padding: 12px 25px;
+    margin: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 25px; /* ปุ่มกลมมน */
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
+  .yes { background-color: #ff69b4; color: white; }
+  .no { background-color: #e9ecef; color: #495057; }
+  .love {
+    background-color: #ff0000;
+    color: white;
+    font-size: 30px !important;
+    padding: 20px 40px;
+    animation: pulse 1.5s infinite; /* เพิ่มเอฟเฟกต์ปุ่มเต้น */
+  }
+  .message-box {
+    border: 3px dashed #ff69b4;
+    padding: 20px;
+    margin-top: 25px;
+    font-size: 22px;
+    background: #fff0f6;
+    border-radius: 15px;
+    color: #d63384;
+  }
+
+  /* --- ส่วนที่เพิ่มมาสำหรับของลอย (ทั้งหัวใจและรูปภาพ) --- */
+  .floating-element {
+    position: absolute;
+    bottom: -100px; /* เริ่มต้นต่ำกว่าจอ */
+    pointer-events: none; /* ไม่ให้บังการคลิกปุ่ม */
+    animation: floatUp linear forwards;
+    z-index: 1; /* ให้อยู่หลังกล่องข้อความ */
+    opacity: 0.9;
+  }
+  
+  /* คลาสสำหรับรูปลอย ให้มีมุมมน */
+  .floating-image {
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateY(-120vh) rotate(360deg); /* ลอยขึ้นไปจนพ้นจอ */
+      opacity: 0;
+    }
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,0,0,0.5); }
+    100% { transform: scale(1); }
+  }
+  /* -------------------------------- */
+
+</style>
+</head>
+<body>
+
+<div class="frame" id="mainFrame">
+  <h1 id="question">คุณรักเค้าไหม? 💖</h1>
+  <img id="gif" src="https://media.tenor.com/76BaX0eo304AAAAj/kitty-kitty-heart.gif" alt="cute gif">
+  <div id="btnContainer"></div>
+</div>
+
+<script>
+  const gif = document.getElementById('gif');
+  const question = document.getElementById('question');
+  const btnContainer = document.getElementById('btnContainer');
+  let yesBtnSize = 18;
+  let noCount = 0;
+
+  let gifs = ["https://media.tenor.com/76BaX0eo304AAAAj/kitty-kitty-heart.gif", 
+    "https://media1.tenor.com/m/wVAjxnPa81IAAAAd/cat-cat-gif.gif",
+    "https://media1.tenor.com/m/f6ts3WWJa-8AAAAC/funny-cats-funny.gif",
+    "https://media1.tenor.com/m/kEZzd8WrRpAAAAAC/peach-peach-and-goma.gif",
+    "https://media.tenor.com/C35t4Pf5GlgAAAAi/peach-and-goma-cute.gif",
+    "https://media1.tenor.com/m/troWhJKIjZsAAAAC/hey-cat.gif"
+  ]
+
+  // --- จุดที่แก้ไข: ใส่รายชื่อไฟล์รูปภาพใหม่ของคุณ ---
+  // อย่าลืมวางไฟล์รูปเหล่านี้ไว้ในโฟลเดอร์เดียวกับไฟล์ HTML นะครับ
+  const userImages = [
+      'image_0.png',
+      'image_1.png',
+      'image_2.png',
+      'image_3.png',
+      'image_4.png',
+      'image_5.png'
+  ];
+  // --------------------------------------------------
+
+  function initButtons() {
+    btnContainer.innerHTML = `
+      <button class="btn yes" id="yesBtn">Yes 💕</button>
+      <button class="btn no" id="noBtn">No 😢</button>
+    `;
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+
+    yesBtn.addEventListener('click', () => yesClick(yesBtn));
+    noBtn.addEventListener('click', () => noClick(yesBtn, noBtn));
+  }
+
+  function resetPage() {
+    noCount = 0;
+    yesBtnSize = 18;
+    question.textContent = "รักเค้าไหม? 💖";
+    gif.src = "https://media.tenor.com/76BaX0eo304AAAAj/kitty-kitty-heart.gif";
+    // ล้าง message-box ถ้ามี
+    const existingMsg = document.querySelector('.message-box');
+    if (existingMsg) existingMsg.remove();
+    
+    initButtons();
+  }
+
+  function yesClick(yesBtn) {
+    gif.src = "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif";
+    question.textContent = "เย่ เค้าก็รักเธอเหมือนกัน 💗";
+    btnContainer.innerHTML = `<button class="btn yes" id="homeBtn">Home 🏠</button>`;
+    document.getElementById('homeBtn').addEventListener('click', resetPage);
+  }
+
+  function noClick(yesBtn, noBtn) {
+    yesBtnSize += 10;
+    yesBtn.style.fontSize = yesBtnSize + 'px';
+    noCount++;
+    
+    // ป้องกันไม่ให้ index เกิน array
+    if (noCount < gifs.length) {
+        gif.src = gifs[noCount];
+    }
+
+    if (noCount >= 5) {
+      noBtn.remove();
+      yesBtn.textContent = "Love ❤️";
+      yesBtn.classList.add('love');
+      // ต้องลบ event listener เก่าออกก่อน ไม่งั้นมันจะทำงานซ้ำ
+      const newYesBtn = yesBtn.cloneNode(true);
+      yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+
+      newYesBtn.onclick = () => {
+        gif.src = "https://media1.tenor.com/m/qR1sGRNmfqsAAAAC/besito-catlove.gif";
+        // เช็คว่ามี message-box อยู่แล้วหรือยัง
+        if (!document.querySelector('.message-box')) {
+              question.insertAdjacentHTML('afterend', `<div class="message-box">รักเหมือนกันนนอิอิ 💞</div>`);
+        }
+        newYesBtn.remove(); // ลบปุ่ม Love ออก
+        btnContainer.innerHTML = `<button class="btn yes" id="homeBtn">Home 🏠</button>`;
+        document.getElementById('homeBtn').addEventListener('click', resetPage);
+      };
+    }
+  }
+
+  // --- ฟังก์ชันสำหรับสร้างของลอย (หัวใจ หรือ รูปภาพ) ---
+  function createFloatingElement() {
+    let floatingEl;
+    // สุ่มโอกาส 50% ที่จะเป็นรูปภาพ, 50% เป็นไอคอนหัวใจ
+    const isImage = Math.random() > 0.5;
+
+    if (isImage && userImages.length > 0) {
+        // สร้างเป็นรูปภาพ
+        floatingEl = document.createElement('img');
+        // สุ่มเลือกรูปจาก array userImages
+        floatingEl.src = userImages[Math.floor(Math.random() * userImages.length)];
+        // กำหนดขนาดความกว้างแบบสุ่ม (ระหว่าง 50px ถึง 100px)
+        const width = Math.random() * 50 + 50;
+        floatingEl.style.width = width + 'px';
+        floatingEl.style.height = 'auto'; // รักษาสัดส่วน
+        floatingEl.classList.add('floating-image'); // เพิ่มคลาสเฉพาะสำหรับรูป
+    } else {
+        // สร้างเป็นไอคอนหัวใจ (แบบเดิม)
+        floatingEl = document.createElement('div');
+        const heartIcons = ['❤️', '💖', '💗', '💕', '💓', '😍', '🥰'];
+        floatingEl.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+        // สุ่มขนาด font
+        const size = Math.random() * 30 + 20; 
+        floatingEl.style.fontSize = size + 'px';
+    }
+
+    // ใช้ CSS class หลักสำหรับ animation
+    floatingEl.classList.add('floating-element');
+    
+    // สุ่มตำแหน่งแนวนอน
+    floatingEl.style.left = Math.random() * 100 + 'vw';
+
+    // สุ่มความเร็วในการลอย (ยิ่งค่าน้อยยิ่งลอยเร็ว)
+    const duration = Math.random() * 6 + 5; // ระหว่าง 5 ถึง 11 วินาที
+    floatingEl.style.animationDuration = duration + 's';
+
+    document.body.appendChild(floatingEl);
+
+    // ลบ element เมื่ออนิเมชั่นจบ เพื่อไม่ให้รกหน่วยความจำ
+    setTimeout(() => {
+        floatingEl.remove();
+    }, duration * 1000);
+  }
+
+  // สร้างของลอยใหม่ทุกๆ 500 มิลลิวินาที (ครึ่งวินาที)
+  setInterval(createFloatingElement, 500);
+  // -------------------------------------------
+
+  resetPage();
+</script>
+
+</body>
+</html>
